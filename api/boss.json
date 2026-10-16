@@ -1,0 +1,23 @@
+{
+  "name": "HorseBridge",
+  "description": "REST API em Delphi com Horse para catálogo de produtos",
+  "version": "1.0.0",
+  "homepage": "https://github.com/seu-usuario/horse-bridge",
+  "mainkeyword": "horse",
+  "keywords": [
+    "horse",
+    "rest",
+    "api",
+    "delphi"
+  ],
+  "dependencies": {
+    "horse": "^3.1.5",
+    "horse-jhonson": "^2.0.3",
+    "horse-cors": "^0.1.8",
+    "horse-jwt": "^0.5.0",
+    "horse-handle-exception": "^2.0.2",
+    "gbswagger": "^2.2.0",
+    "delphi-jose-jwt": "^0.8.3",
+    "BCrypt": "^1.0.0"
+  }
+}
