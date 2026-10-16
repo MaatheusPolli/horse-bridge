@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on: []
+    # A API Delphi roda nativamente no Windows (ver README).
+    # O front em container faz proxy para host.docker.internal:9000.

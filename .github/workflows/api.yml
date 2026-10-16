@@ -1,0 +1,43 @@
+name: API — Build & Test
+
+on:
+  push:
+    paths: ["api/**"]
+  pull_request:
+    paths: ["api/**"]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Delphi (Community Edition)
+        # Requer licença CE configurada no runner ou uso de dcc32 pré-instalado.
+        # Alternativa: usar um runner self-hosted com Delphi instalado.
+        run: echo "Delphi build requer runner com Delphi CE instalado"
+
+      - name: Install Boss
+        run: |
+          choco install boss-delphi -y
+        shell: cmd
+
+      - name: Install dependencies
+        working-directory: api
+        run: boss install
+        shell: cmd
+
+      - name: Build
+        working-directory: api
+        run: msbuild HorseBridge.dproj /t:Build /p:Config=Release /p:Platform=Win32
+        shell: cmd
+
+      - name: Build Tests
+        working-directory: api/tests
+        run: msbuild HorseBridgeTests.dproj /t:Build /p:Config=Release /p:Platform=Win32
+        shell: cmd
+
+      - name: Run Tests
+        working-directory: api/tests
+        run: .\Win32\Release\HorseBridgeTests.exe --exit:Continue
+        shell: cmd
