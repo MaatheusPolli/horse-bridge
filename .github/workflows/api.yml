@@ -2,42 +2,43 @@ name: API — Build & Test
 
 on:
   push:
-    paths: ["api/**"]
+    paths: ["api/**", ".github/workflows/api.yml"]
   pull_request:
-    paths: ["api/**"]
+    paths: ["api/**", ".github/workflows/api.yml"]
+  workflow_dispatch:
 
+# O Delphi não é instalável em runners hospedados pelo GitHub.
+# Este job exige um runner self-hosted Windows com Delphi (CE ou superior)
+# instalado e a ferramenta Boss no PATH. Labels: self-hosted, windows, delphi.
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: [self-hosted, windows, delphi]
+    env:
+      DELPHI_ROOT: C:\Program Files (x86)\Embarcadero\Studio\37.0
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Delphi (Community Edition)
-        # Requer licença CE configurada no runner ou uso de dcc32 pré-instalado.
-        # Alternativa: usar um runner self-hosted com Delphi instalado.
-        run: echo "Delphi build requer runner com Delphi CE instalado"
-
-      - name: Install Boss
-        run: |
-          choco install boss-delphi -y
-        shell: cmd
-
-      - name: Install dependencies
+      - name: Install dependencies (Boss)
         working-directory: api
+        shell: cmd
         run: boss install
-        shell: cmd
 
-      - name: Build
+      - name: Build API
         working-directory: api
-        run: msbuild HorseBridge.dproj /t:Build /p:Config=Release /p:Platform=Win32
         shell: cmd
+        run: |
+          call "%DELPHI_ROOT%\bin\rsvars.bat"
+          msbuild HorseBridge.dproj /t:Build /p:Config=Release /p:Platform=Win32
 
-      - name: Build Tests
+      - name: Build tests
         working-directory: api/tests
-        run: msbuild HorseBridgeTests.dproj /t:Build /p:Config=Release /p:Platform=Win32
         shell: cmd
+        run: |
+          call "%DELPHI_ROOT%\bin\rsvars.bat"
+          msbuild HorseBridgeTests.dproj /t:Build /p:Config=Release /p:Platform=Win32
 
-      - name: Run Tests
+      - name: Run tests
         working-directory: api/tests
-        run: .\Win32\Release\HorseBridgeTests.exe --exit:Continue
         shell: cmd
+        run: Win32\Release\HorseBridgeTests.exe
